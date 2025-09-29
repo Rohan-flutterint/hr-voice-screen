@@ -47,6 +47,36 @@ data/job_description.pdf
 data/resume.pdf
 data/tickets/*.pdf|.txt|.md   (optional)
 ```
+--
+
+## Install Ollama + pull a small instruct model
+```
+# Install Ollama (macOS)
+# if you have Homebrew or download from https://ollama.com/download
+brew install ollama
+
+
+# Start the Ollama service
+ollama serve
+
+# Pull a compact chat model (choose ONE)
+# (A) very light (fastest, 3B params): good enough for Q generation & rubric
+ollama pull llama3.2:1b
+
+# (B) bigger & better (needs ~8–10GB RAM)
+# ollama pull llama3.2:3b
+
+```
+
+---
+## sample .env file parameters if you are working with Ollama
+```
+LOCAL_LLM_MODEL=llama3.2:3b
+USE_LOCAL_STT=true
+TTS_VOICE=Samantha
+TTS_RATE=170 # 150–190 sounds natural; lower = slower
+# LOCAL_LLM_MODEL=llama3.2:1b
+```
 
 ---
 
