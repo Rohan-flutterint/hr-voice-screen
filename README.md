@@ -41,13 +41,16 @@ cp .env.example .env
 # Edit .env and set OPENAI_API_KEY
 ```
 
+---
+
 Put the documents here:
 ```
 data/job_description.pdf
 data/resume.pdf
 data/tickets/*.pdf|.txt|.md   (optional)
 ```
---
+
+---
 
 ## Install Ollama + pull a small instruct model
 ```
