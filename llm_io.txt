@@ -1,0 +1,48 @@
+import os, json
+from dotenv import load_dotenv
+
+# Model name is read at call-time so you can change it in .env without restart
+def _get_model():
+    return os.getenv("LLM_MODEL", "gpt-4o-mini")
+
+_client = None
+def _get_client():
+    """Lazy-create OpenAI client with our own httpx.Client (no proxies kw)."""
+    global _client
+    if _client is None:
+        load_dotenv()
+        key = os.getenv("OPENAI_API_KEY")
+        if not key:
+            raise RuntimeError("OPENAI_API_KEY missing. Add it to .env or export it.")
+        from openai import OpenAI
+        import httpx
+        _httpx = httpx.Client(timeout=60.0)  # no proxies passed
+        _client = OpenAI(api_key=key, http_client=_httpx)
+    return _client
+
+def chat_json(system: str, user: str):
+    client = _get_client()
+    resp = client.chat.completions.create(
+        model=_get_model(),
+        response_format={"type": "json_object"},
+        messages=[{"role": "system", "content": system},
+                  {"role": "user", "content": user}],
+        temperature=0.2,
+    )
+    txt = resp.choices[0].message.content
+    try:
+        return json.loads(txt)
+    except Exception:
+        if txt.strip().startswith("["):
+            return json.loads(txt)
+        return {"raw": txt}
+
+def chat_text(system: str, user: str):
+    client = _get_client()
+    resp = client.chat.completions.create(
+        model=_get_model(),
+        messages=[{"role": "system", "content": system},
+                  {"role": "user", "content": user}],
+        temperature=0.2,
+    )
+    return resp.choices[0].message.content
